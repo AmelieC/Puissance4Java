@@ -14,8 +14,9 @@ public class Grille {
 		boolean[][] grille = new boolean[nbrColonne][nbrLigne];
 	for(int x = 0 ; x < nbrColonne ; x++)
 		for(int y = 0 ; y < nbrLigne ; y++)
-			grille[x][y] = '.';
+			grille[x][y] = true;
 	}
+	
 	
 
 }
