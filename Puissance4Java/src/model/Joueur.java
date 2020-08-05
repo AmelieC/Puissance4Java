@@ -1,6 +1,8 @@
 package model;
 
 public class Joueur {
-	private Jeton ;
+	
+	private String prenom;
+	private Jeton jeton;
 	
 }
