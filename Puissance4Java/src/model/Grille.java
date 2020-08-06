@@ -18,7 +18,7 @@ public class Grille {
 		
 	}
 	
-	public void AfficheGrille () {
+	public static void AfficheGrille () {
 		
 		boolean[][] grille = new boolean[nbrColonne][nbrLigne];
 		//for(int x = 0 ; x < nbrColonne ; x++)
