@@ -15,6 +15,12 @@ protected Scanner sc;
 //constructeur
 
 
+public Partie(ArrayList<Joueur> lj, Grille grille) {
+	
+    this.lj = lj;
+	this.grille = grille;
+}
+
 
 public Partie () {}
 
@@ -37,7 +43,7 @@ public void initMenu () {
 			initPartie(lj, grille);
 			
 		case 2:
-			affiche("Exit");
+			affiche("au revoir!");
 			System.exit(0);
 			
 		 default:
@@ -52,29 +58,28 @@ public void initMenu () {
 
 public void initPartie (ArrayList<Joueur> lj, Grille grille) {
 	
-	
+	String nom ;
 	Scanner sc = new Scanner(System.in);
-	affiche("Entrez est le nom de deux joueurs?");
-	String nom = sc.nextLine();
-	ArrayList<Joueur> lj1 = new ArrayList<Joueur>();
+	affiche("Entrez est le nom du joueur 1");
 	Joueur j1 = new Joueur (nom = sc.nextLine());
-	Joueur j2 = new Joueur (nom = sc.nextLine());
-		
+	ArrayList<Joueur> lj1 = new ArrayList<Joueur>();
+	affiche("Entrez est le nom du joueur 2");
+	Joueur j2 = new Joueur (nom = sc.nextLine());	
 	
 	setListJoueurs(lj1);
 	lj1.add(j1);
 	lj1.add(j2);
-	 for(Joueur elem: lj1)
-     {
-		 
-     	 System.out.println ("nom"+ nom);
-     }
+	
+	 for(int i = 0; i<lj1.size();i++)
+	        System.out.println("Voici les deux joueurs : " + lj1.get(i).getPrenom());
+	 
+	 Grille.AfficheGrille();
+	  }
 	
 
 	
-	Grille.AfficheGrille();
-	
-}
+		
+
 
 
 
@@ -107,12 +112,12 @@ public static void main(String[] args)
 // getter setter
 
 public ArrayList<Joueur> getListJoueurs() {
-	return listJoueurs;
+	return lj;
 }
 
 
 public void setListJoueurs(ArrayList<Joueur> listJoueurs) {
-	this.listJoueurs = listJoueurs;
+	this.lj = listJoueurs;
 }
 
 
