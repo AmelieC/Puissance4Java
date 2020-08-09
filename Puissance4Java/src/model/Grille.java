@@ -5,7 +5,7 @@ public class Grille {
 	private static int nbrColonne = 7;
 	private static int nbrLigne = 6;
 	int align = 4;
-	private boolean[][] grille;
+	private int[][] grille;
 	
 	
 	//tableau de ligne et de colonne = grille
@@ -20,7 +20,7 @@ public class Grille {
 	
 	public static void AfficheGrille () {
 		
-		boolean[][] grille = new boolean[nbrColonne][nbrLigne];
+		int[][] grille = new int[nbrColonne][nbrLigne];
 		//for(int x = 0 ; x < nbrColonne ; x++)
 			//for(int y = 0 ; y < nbrLigne ; y++)
 				//grille[x][y] = true;
@@ -30,11 +30,27 @@ public class Grille {
 			//System.out.print('|');
 			for(int x = 0 ; x < nbrColonne ; x++){
 				System.out.print('|');
-				System.out.print(" " + grille[x][y] + " ");
+				System.out.print(" " + "." + " ");
 			}
 			System.out.println('|');
 		}
 		
+	}
+
+	public static int getNbrColonne() {
+		return nbrColonne;
+	}
+
+	public static void setNbrColonne(int nbrColonne) {
+		Grille.nbrColonne = nbrColonne;
+	}
+
+	public static int getNbrLigne() {
+		return nbrLigne;
+	}
+
+	public static void setNbrLigne(int nbrLigne) {
+		Grille.nbrLigne = nbrLigne;
 	}
 	
 

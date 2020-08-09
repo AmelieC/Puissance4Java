@@ -7,12 +7,14 @@ public class Joueur {
 	
 	private static ArrayList<Joueur> listJoueurs;
 	private String prenom;
+	private int score;
+	
 	//private Jeton jeton;
 
 	
 	
 	
-	public Joueur(String prenom) {
+	public Joueur(String prenom, int score) {
 		
 		this.prenom = prenom;
 	}
@@ -40,6 +42,20 @@ public class Joueur {
 	 */
 	public void setListJoueurs(ArrayList<Joueur> listJoueurs) {
 		Joueur.listJoueurs = listJoueurs;
+	}
+
+
+
+
+	public int getScore() {
+		return score;
+	}
+
+
+
+
+	public void setScore(int score) {
+		this.score = score;
 	}
 	
 }
