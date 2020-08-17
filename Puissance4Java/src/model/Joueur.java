@@ -1,61 +1,37 @@
 package model;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-public class Joueur {
+public class Joueur extends Personne{
 	
-	private static ArrayList<Joueur> listJoueurs;
-	private String prenom;
-	private int score;
+	private String couleur;
+	private int nbrVictoire;
 	
-	//private Jeton jeton;
-
-	
-	
-	
-	public Joueur(String prenom, int score) {
-		
-		this.prenom = prenom;
-	}
-
-
-	
-	
-	public String getPrenom() {
-		return prenom;
-	}
-
-	public void setPrenom(String prenom) {
-		this.prenom = prenom;
-	}
-
-	/**
-	 * @return the listJoueurs
-	 */
-	public static ArrayList<Joueur> getListJoueurs() {
-		return getListJoueurs();
-	}
-
-	/**
-	 * @param listJoueurs the listJoueurs to set
-	 */
-	public void setListJoueurs(ArrayList<Joueur> listJoueurs) {
-		Joueur.listJoueurs = listJoueurs;
-	}
-
-
-
-
-	public int getScore() {
-		return score;
-	}
-
-
-
-
-	public void setScore(int score) {
-		this.score = score;
+	public Joueur(String nom, String couleur) {
+		super(nom);
+		this.couleur = couleur;
+		this.nbrVictoire = 0;
 	}
 	
+	public String getNom() {
+		return super.getNom();
+	}
+	
+	public String getCouleur() {
+		return this.couleur;
+	}
+	
+	public int getNbrVictoire() {
+		return this.nbrVictoire;
+	}
+	
+	public void setNom(String nom) {
+		super.setNom(nom);
+	}
+	
+	public void setCouleur(String couleur) {
+		this.couleur = couleur;
+	}
+	
+	public void setNbrVictoire(int nbrVictoire) {
+		this.nbrVictoire = nbrVictoire;
+	}
 }
