@@ -18,6 +18,7 @@ public class ConsoleView {
 	private Scanner scanner;
 	private int réponse;
 	private boolean estValide;
+	private int dernièreLigneJouée;
 	
 	public ConsoleView(Partie partie) {
 		this.partie = partie;
@@ -28,6 +29,7 @@ public class ConsoleView {
 		this.scanner = new Scanner(System.in);
 		this.réponse = 0;
 		this.estValide = true;
+		this.dernièreLigneJouée = 0;
 	}
 	
 	private void initMenu() {
@@ -109,12 +111,37 @@ public class ConsoleView {
 				System.out.println("Veuillez entrer un numéro entre 1 et 7.");
 			}
 			
-			if (this.estValide && this.grilleC.ajouterJeton(this.partie.getGrille(), this.partie.getJoueurEnCours(), this.réponse) != 0) {
-				this.estValide = false;
-				System.out.println("Cette colonne est remplie. Veuillez en choisir une autre.");
+			if (this.estValide) {
+				this.dernièreLigneJouée = this.grilleC.ajouterJeton(this.partie.getGrille(), this.partie.getJoueurEnCours(), this.réponse);
+				if (this.dernièreLigneJouée == -1) {
+					this.estValide = false;
+					System.out.println("Cette colonne est remplie. Veuillez en choisir une autre.");
+				}
 			}
+				
 		} while (!this.estValide);
 		
+	}
+	
+	private void rejouer() {
+		System.out.println("Souhaitez vous rejouer ?");
+		System.out.println("[1] Nouvelle partie");
+		System.out.println("[2] Quitter");
+		
+		do {
+			try {
+				this.estValide = true;
+				this.réponse = Integer.parseInt(this.scanner.nextLine());
+				
+				if (this.réponse != 1 && this.réponse != 2) {
+					this.estValide = false;
+					System.out.println("Veuillez entrer 1 ou 2.");
+				}
+			} catch (NumberFormatException e) {
+				this.estValide = false;
+				System.out.println("Veuillez entrer 1 ou 2.");
+			}
+		} while(!this.estValide);
 	}
 	
 	public static void main(String[] args) {
@@ -137,7 +164,25 @@ public class ConsoleView {
 			vue.joueJeton();
 			vue.afficheGrille();
 			
-			vue.partie.joueurSuivant();
+			if (!vue.partie.getGrille().checkVictoire(vue.partie.getJoueurEnCours(), vue.dernièreLigneJouée, vue.réponse - 1)) {
+				vue.partie.joueurSuivant();
+			} else {
+				vue.partieC.setEstTerminée(vue.partie, true);
+				Joueur joueurGagnant = vue.partie.getJoueurEnCours();
+				vue.joueurC.setNbrVictoire(joueurGagnant, joueurGagnant.getNbrVictoire() + 1);
+				System.out.println(joueurGagnant.getNom() + " gagne la partie, bravo ! Nombre de victoire(s) : " + joueurGagnant.getNbrVictoire());
+				
+				vue.rejouer();
+				if (vue.réponse == 1) {
+					grille = new Grille(6, 7);
+					partie = new Partie(joueur1, joueur2, grille);
+					vue = new ConsoleView(partie);
+					vue.afficheGrille();
+				} else {
+					System.out.println("Au revoir !");
+					System.exit(0);
+				}
+			}
 		}
 	}
 

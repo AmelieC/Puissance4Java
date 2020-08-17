@@ -22,7 +22,7 @@ public class GrilleController {
 				else symbole = 'J';
 				grille.getGrille()[x][colonne] = new Jeton(joueur.getCouleur(), symbole, joueur);
 				
-				return 0;
+				return x;
 			}
 		}
 		
