@@ -12,10 +12,9 @@ public class Partie {
 	protected Scanner sc;
 	protected Scanner sc1;
 	
-	public Partie(Joueur joueur1, Joueur joueur2, Grille grille) {
+	public Partie(Joueur joueur1, Joueur joueur2) {
 	    this.listeJoueur.add(joueur1);
 	    this.listeJoueur.add(joueur2);
-		this.grille = grille;
 		this.estTerminée = false;
 		this.joueurEnCours = this.listeJoueur.get(0);
 		Partie.nbrParties++;
@@ -69,9 +68,5 @@ public class Partie {
 		} else {
 			this.joueurEnCours = this.listeJoueur.get(0);
 		}
-	}
-	
-	public void finPartie() {
-		
 	}
 }

@@ -32,7 +32,7 @@ public class ConsoleView {
 		this.dernièreLigneJouée = 0;
 	}
 	
-	private void initMenu() {
+	private String initMenu() {
 		System.out.println("Bienvenue dans Puissance 4 !");
 		System.out.println("[1] Démarrer une partie");
 		System.out.println("[2] Quitter");
@@ -57,6 +57,46 @@ public class ConsoleView {
 			System.out.println("Au revoir !");
 			System.exit(0);
 		}
+		
+		System.out.println("Combien de lignes ? (défaut : 6, minimum : 4, maximum : 20)");
+		
+		do {
+			try {
+				this.estValide = true;
+				this.réponse = Integer.parseInt(this.scanner.nextLine());
+				
+				if (this.réponse < 4 && this.réponse > 20) {
+					this.estValide = false;
+					System.out.println("Veuillez entrer un nombre de lignes entre 4 et 20.");
+				}
+				
+			} catch (NumberFormatException e) {
+				this.estValide = false;
+				System.out.println("Veuillez entrer un nombre de lignes entre 4 et 20.");
+			}
+		} while(!this.estValide);
+		int nbrLignes = this.réponse;
+		
+		System.out.println("Combien de colonne ? (défaut : 7, minimum : 4, maximum : 20)");
+		
+		do {
+			try {
+				this.estValide = true;
+				this.réponse = Integer.parseInt(this.scanner.nextLine());
+				
+				if (this.réponse < 4 && this.réponse > 20) {
+					this.estValide = false;
+					System.out.println("Veuillez entrer un nombre de colonnes entre 4 et 20.");
+				}
+				
+			} catch (NumberFormatException e) {
+				this.estValide = false;
+				System.out.println("Veuillez entrer un nombre de colonnes entre 4 et 20.");
+			}
+		} while(!this.estValide);
+		int nbrColonnes = this.réponse;
+		
+		return nbrLignes + " " + nbrColonnes;
 	}
 	
 	private void nomJoueurs(Joueur joueur1, Joueur joueur2) {
@@ -94,21 +134,21 @@ public class ConsoleView {
 	
 	private void joueJeton() {
 		System.out.println("C'est à " + this.partie.getJoueurEnCours().getNom() + " de jouer ! (Jeton : " + this.partie.getJoueurEnCours().getCouleur() + ")");
-		System.out.println("Entrez le numéro de colonne : (1-7)");
+		System.out.println("Entrez le numéro de colonne : (1-" + this.partie.getGrille().getNbrColonne() + ")");
 		
 		do {
 			try {
 				this.estValide = true;
 				this.réponse = Integer.parseInt(this.scanner.nextLine());
 				
-				if (this.réponse < 1 || this.réponse > 7) {
+				if (this.réponse < 1 || this.réponse > this.partie.getGrille().getNbrColonne()) {
 					this.estValide = false;
-					System.out.println("Veuillez entrer un numéro entre 1 et 7.");
+					System.out.println("Veuillez entrer un numéro entre 1 et " + this.partie.getGrille().getNbrColonne() + ".");
 				}
 				
 			} catch (NumberFormatException e) {
 				this.estValide = false;
-				System.out.println("Veuillez entrer un numéro entre 1 et 7.");
+				System.out.println("Veuillez entrer un numéro entre 1 et " + this.partie.getGrille().getNbrColonne() + ".");
 			}
 			
 			if (this.estValide) {
@@ -148,13 +188,15 @@ public class ConsoleView {
 		Joueur joueur1 = new Joueur("", "rouge");
 		Joueur joueur2 = new Joueur("", "jaune");
 		
-		Grille grille = new Grille(6, 7);
-		
-		Partie partie = new Partie(joueur1, joueur2, grille);
+		Partie partie = new Partie(joueur1, joueur2);
 		
 		ConsoleView vue = new ConsoleView(partie);
 		
-		vue.initMenu();
+		String[] nbrLignesColonnes = vue.initMenu().split(" ");
+		int nbrLignes = Integer.parseInt(nbrLignesColonnes[0]);
+		int nbrColonnes = Integer.parseInt(nbrLignesColonnes[1]);
+		Grille grille = new Grille(nbrLignes, nbrColonnes);
+		vue.partieC.setGrille(partie, grille);
 		
 		vue.nomJoueurs(joueur1, joueur2);
 		
@@ -164,18 +206,24 @@ public class ConsoleView {
 			vue.joueJeton();
 			vue.afficheGrille();
 			
-			if (!vue.partie.getGrille().checkVictoire(vue.partie.getJoueurEnCours(), vue.dernièreLigneJouée, vue.réponse - 1)) {
+			if (!vue.partie.getGrille().checkVictoire(vue.partie.getJoueurEnCours(), vue.dernièreLigneJouée, vue.réponse - 1) && !vue.partie.getGrille().estPleine()) {
 				vue.partie.joueurSuivant();
 			} else {
 				vue.partieC.setEstTerminée(vue.partie, true);
-				Joueur joueurGagnant = vue.partie.getJoueurEnCours();
-				vue.joueurC.setNbrVictoire(joueurGagnant, joueurGagnant.getNbrVictoire() + 1);
-				System.out.println(joueurGagnant.getNom() + " gagne la partie, bravo ! Nombre de victoire(s) : " + joueurGagnant.getNbrVictoire());
+				
+				if (vue.partie.getGrille().estPleine()) {
+					System.out.println("La grille est pleine, match nul !");
+				} else {
+					Joueur joueurGagnant = vue.partie.getJoueurEnCours();
+					vue.joueurC.setNbrVictoire(joueurGagnant, joueurGagnant.getNbrVictoire() + 1);
+					System.out.println(joueurGagnant.getNom() + " gagne la partie, bravo ! Nombre de victoire(s) : " + joueurGagnant.getNbrVictoire());
+				}
 				
 				vue.rejouer();
 				if (vue.réponse == 1) {
-					grille = new Grille(6, 7);
-					partie = new Partie(joueur1, joueur2, grille);
+					grille = new Grille(nbrLignes, nbrColonnes);
+					partie = new Partie(joueur1, joueur2);
+					vue.partieC.setGrille(partie, grille);
 					vue = new ConsoleView(partie);
 					vue.afficheGrille();
 				} else {

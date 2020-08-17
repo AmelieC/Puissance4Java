@@ -33,6 +33,14 @@ public class Grille {
 		this.nbrLigne = nbrLigne;
 	}
 	
+	public boolean estPleine() {
+		for (int x=0;x<this.nbrColonne;x++) {
+			if (this.grille[0][x] == null) return false;
+		}
+		
+		return true;
+	}
+	
 	public boolean checkVictoire(Joueur joueur, int nbrLigne, int nbrColonne) {
 		int somme = 0;
 		
