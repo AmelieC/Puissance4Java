@@ -87,8 +87,65 @@ public class Grille extends Observable {
 			}
 		}
 		
-		// Combinaison gagnante oblique
+		// Combinaison gagnante oblique montante
+		// On trouve le bord "bas gauche" de la diagonale
+		int bordDiagLigne = this.dernièreLigneJouée;
+		int bordDiagColonne = this.dernièreColonneJouée;
+		boolean trouvé = false;
+		while(!trouvé) {
+			if (bordDiagLigne == this.nbrLigne - 1 || bordDiagColonne == 0) trouvé = true;
+			else {
+				bordDiagLigne++;
+				bordDiagColonne--;
+			}
+		}
+		somme = 0;
+		boolean estVérifié = false;
+		while(!estVérifié) {
+			try {
+				if (this.grille[bordDiagLigne][bordDiagColonne] != null && this.grille[bordDiagLigne][bordDiagColonne].getCouleur() == joueur.getCouleur()) {
+					somme++;
+					if (somme > 3) return true;
+				} else {
+					somme = 0;
+				}
+			} catch (ArrayIndexOutOfBoundsException e) {
+				estVérifié = true;
+			}
+			
+			bordDiagLigne--;
+			bordDiagColonne++;
+		}
 		
+		// Combinaison gagnante oblique descendante
+		// On trouve le bord "haut gauche" de la diagonale
+		bordDiagLigne = this.dernièreLigneJouée;
+		bordDiagColonne = this.dernièreColonneJouée;
+		trouvé = false;
+		while(!trouvé) {
+			if (bordDiagLigne == 0 || bordDiagColonne == 0) trouvé = true;
+			else {
+				bordDiagLigne--;
+				bordDiagColonne--;
+			}
+		}
+		somme = 0;
+		estVérifié = false;
+		while(!estVérifié) {
+			try {
+				if (this.grille[bordDiagLigne][bordDiagColonne] != null && this.grille[bordDiagLigne][bordDiagColonne].getCouleur() == joueur.getCouleur()) {
+					somme++;
+					if (somme > 3) return true;
+				} else {
+					somme = 0;
+				}
+			} catch (ArrayIndexOutOfBoundsException e) {
+				estVérifié = true;
+			}
+			
+			bordDiagLigne++;
+			bordDiagColonne++;
+		}
 		
 		return false;
 	}
