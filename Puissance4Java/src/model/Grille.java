@@ -1,10 +1,15 @@
 package model;
 
-public class Grille {
+import java.util.Observable;
+
+@SuppressWarnings("deprecation")
+public class Grille extends Observable {
 	
 	private int nbrColonne = 0;
 	private int nbrLigne = 0;
 	private Jeton[][] grille;
+	private int dernièreLigneJouée = 0;
+	private int dernièreColonneJouée = 0;
 	
 	//tableau de ligne et de colonne = grille
 	public Grille (int nbrLigne, int nbrColonne) {
@@ -24,13 +29,31 @@ public class Grille {
 	public Jeton[][] getGrille() {
 		return this.grille;
 	}
+	
+	public int getDernièreLigneJouée() {
+		return this.dernièreLigneJouée;
+	}
 
+	public int getDernièreColonneJouée() {
+		return this.dernièreColonneJouée;
+	}
+	
 	public void setNbrColonne(int nbrColonne) {
 		this.nbrColonne = nbrColonne;
 	}
 
 	public void setNbrLigne(int nbrLigne) {
 		this.nbrLigne = nbrLigne;
+	}
+	
+	public void setJeton(int ligne, int colonne, Jeton jeton) {
+		this.grille[ligne][colonne] = jeton;
+		
+		this.dernièreLigneJouée = ligne;
+		this.dernièreColonneJouée = colonne;
+		
+		setChanged();
+		notifyObservers();
 	}
 	
 	public boolean estPleine() {
@@ -41,12 +64,11 @@ public class Grille {
 		return true;
 	}
 	
-	public boolean checkVictoire(Joueur joueur, int nbrLigne, int nbrColonne) {
-		int somme = 0;
-		
+	public boolean checkVictoire(Joueur joueur) {
 		// Combinaison gagnante horizontale
+		int somme = 0;
 		for (int x = 0;x<this.nbrColonne;x++) {
-			if (this.grille[nbrLigne][x] != null && this.grille[nbrLigne][x].getCouleur() == joueur.getCouleur()) {
+			if (this.grille[this.dernièreLigneJouée][x] != null && this.grille[this.dernièreLigneJouée][x].getCouleur() == joueur.getCouleur()) {
 				somme++;
 				if (somme > 3) return true;
 			} else {
@@ -55,8 +77,9 @@ public class Grille {
 		}
 		
 		// Combinaison gagnante verticale
+		somme = 0;
 		for (int x = 0;x<this.nbrLigne;x++) {
-			if (this.grille[x][nbrColonne] != null && this.grille[x][nbrColonne].getCouleur() == joueur.getCouleur()) {
+			if (this.grille[x][this.dernièreColonneJouée] != null && this.grille[x][this.dernièreColonneJouée].getCouleur() == joueur.getCouleur()) {
 				somme++;
 				if (somme > 3) return true;
 			} else {

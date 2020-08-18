@@ -3,6 +3,8 @@
  */
 package controller;
 
+import java.util.Observer;
+
 import model.Grille;
 import model.Jeton;
 import model.Joueur;
@@ -20,12 +22,16 @@ public class GrilleController {
 				char symbole;
 				if (joueur.getCouleur() == "rouge") symbole = 'R';
 				else symbole = 'J';
-				grille.getGrille()[x][colonne] = new Jeton(joueur.getCouleur(), symbole, joueur);
+				grille.setJeton(x, colonne, new Jeton(joueur.getCouleur(), symbole, joueur));
 				
-				return x;
+				return 0;
 			}
 		}
 		
 		return -1;
+	}
+	
+	public void ajouterObserver(Grille grille, Observer o) {
+		grille.addObserver(o);
 	}
 }

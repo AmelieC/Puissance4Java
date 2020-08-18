@@ -4,11 +4,14 @@ import model.Grille;
 import model.Joueur;
 import model.Partie;
 
+import java.util.Observable;
+import java.util.Observer;
 import java.util.Scanner;
 
 import controller.*;
 
-public class ConsoleView {
+@SuppressWarnings("deprecation")
+public class ConsoleView implements Observer{
 	
 	private Partie partie;
 	private PartieController partieC;
@@ -18,7 +21,6 @@ public class ConsoleView {
 	private Scanner scanner;
 	private int réponse;
 	private boolean estValide;
-	private int dernièreLigneJouée;
 	
 	public ConsoleView(Partie partie) {
 		this.partie = partie;
@@ -29,7 +31,6 @@ public class ConsoleView {
 		this.scanner = new Scanner(System.in);
 		this.réponse = 0;
 		this.estValide = true;
-		this.dernièreLigneJouée = 0;
 	}
 	
 	private String initMenu() {
@@ -152,8 +153,7 @@ public class ConsoleView {
 			}
 			
 			if (this.estValide) {
-				this.dernièreLigneJouée = this.grilleC.ajouterJeton(this.partie.getGrille(), this.partie.getJoueurEnCours(), this.réponse);
-				if (this.dernièreLigneJouée == -1) {
+				if (this.grilleC.ajouterJeton(this.partie.getGrille(), this.partie.getJoueurEnCours(), this.réponse) == -1) {
 					this.estValide = false;
 					System.out.println("Cette colonne est remplie. Veuillez en choisir une autre.");
 				}
@@ -184,6 +184,10 @@ public class ConsoleView {
 		} while(!this.estValide);
 	}
 	
+	public void update(Observable o, Object arg) {
+		this.afficheGrille();
+	}
+	
 	public static void main(String[] args) {
 		Joueur joueur1 = new Joueur("", "rouge");
 		Joueur joueur2 = new Joueur("", "jaune");
@@ -196,6 +200,7 @@ public class ConsoleView {
 		int nbrLignes = Integer.parseInt(nbrLignesColonnes[0]);
 		int nbrColonnes = Integer.parseInt(nbrLignesColonnes[1]);
 		Grille grille = new Grille(nbrLignes, nbrColonnes);
+		vue.grilleC.ajouterObserver(grille, vue);
 		vue.partieC.setGrille(partie, grille);
 		
 		vue.nomJoueurs(joueur1, joueur2);
@@ -204,14 +209,13 @@ public class ConsoleView {
 		
 		while(!vue.partie.getEstTerminée()) {
 			vue.joueJeton();
-			vue.afficheGrille();
 			
-			if (!vue.partie.getGrille().checkVictoire(vue.partie.getJoueurEnCours(), vue.dernièreLigneJouée, vue.réponse - 1) && !vue.partie.getGrille().estPleine()) {
+			if (!vue.partie.getGrille().checkVictoire(vue.partie.getJoueurEnCours()) && !vue.partie.getGrille().estPleine()) {
 				vue.partie.joueurSuivant();
 			} else {
 				vue.partieC.setEstTerminée(vue.partie, true);
 				
-				if (vue.partie.getGrille().estPleine()) {
+				if (vue.partie.getGrille().estPleine() && !vue.partie.getGrille().checkVictoire(vue.partie.getJoueurEnCours())) {
 					System.out.println("La grille est pleine, match nul !");
 				} else {
 					Joueur joueurGagnant = vue.partie.getJoueurEnCours();
@@ -225,6 +229,7 @@ public class ConsoleView {
 					partie = new Partie(joueur1, joueur2);
 					vue.partieC.setGrille(partie, grille);
 					vue = new ConsoleView(partie);
+					vue.grilleC.ajouterObserver(grille, vue);
 					vue.afficheGrille();
 				} else {
 					System.out.println("Au revoir !");

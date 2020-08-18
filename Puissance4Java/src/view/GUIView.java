@@ -21,12 +21,14 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
+import java.util.Observable;
+import java.util.Observer;
 import java.awt.event.ActionEvent;
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-public class GUIView {
+public class GUIView implements Observer{
 
 	private JFrame frame;
 	private Partie partie;
@@ -34,7 +36,6 @@ public class GUIView {
 	private GrilleController grilleC;
 	private JetonController jetonC;
 	private JoueurController joueurC;
-	private int dernièreLigneJouée;
 	private GridBagConstraints gbc;
 	private JTextArea infoTexte;
 	private JLabel[][] GUIGrille;
@@ -49,7 +50,6 @@ public class GUIView {
 		this.grilleC = new GrilleController();
 		this.jetonC = new JetonController();
 		this.joueurC = new JoueurController();
-		this.dernièreLigneJouée = 0;
 		this.frame = new JFrame();
 		this.frame.setBounds(100, 100, 450, 300);
 		this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -68,15 +68,15 @@ public class GUIView {
 	}
 	
 	private void joueJeton(int colonne) {
-		this.dernièreLigneJouée = this.grilleC.ajouterJeton(this.partie.getGrille(), this.partie.getJoueurEnCours(), colonne);
-		
-		if (this.dernièreLigneJouée == -1) {
+		if (this.grilleC.ajouterJeton(this.partie.getGrille(), this.partie.getJoueurEnCours(), colonne) == -1) {
 			this.infoTexte.setText(this.infoTexte.getText() + "\n Cette colonne est remplie.\n");
 		} else {
-			if (this.partie.getJoueurEnCours().getCouleur() == "rouge") this.GUIGrille[this.dernièreLigneJouée][colonne - 1].setBackground(Color.red);
-			else this.GUIGrille[this.dernièreLigneJouée][colonne - 1].setBackground(Color.yellow);
 			
-			if (!this.partie.getGrille().checkVictoire(this.partie.getJoueurEnCours(), this.dernièreLigneJouée, colonne - 1) && !this.partie.getGrille().estPleine()) {
+			
+			//if (this.partie.getJoueurEnCours().getCouleur() == "rouge") this.GUIGrille[this.dernièreLigneJouée][colonne - 1].setBackground(Color.red);
+			//else this.GUIGrille[this.dernièreLigneJouée][colonne - 1].setBackground(Color.yellow);
+			
+			if (!this.partie.getGrille().checkVictoire(this.partie.getJoueurEnCours()) && !this.partie.getGrille().estPleine()) {
 				this.partie.joueurSuivant();
 				this.infoTexte.setText("C'est à " + this.partie.getJoueurEnCours().getNom() + " de jouer ! (Jeton : " + this.partie.getJoueurEnCours().getCouleur() + ")");
 			} else {
@@ -111,7 +111,6 @@ public class GUIView {
 		oui.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				frame.dispose();
-				//frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
 				
 				Partie nouvPartie = new Partie(partie.getJoueurList().get(0), partie.getJoueurList().get(1));
 				GUIView vue = new GUIView(nouvPartie);
@@ -164,6 +163,7 @@ public class GUIView {
 		
 		this.frame.setVisible(true);
 				
+		GUIView vue = this;
 		envoyer.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -196,7 +196,9 @@ public class GUIView {
 				else {
 					joueurC.setNom(joueur1, nomJoueur1.getText());
 					joueurC.setNom(joueur2, nomJoueur2.getText());
-					partieC.setGrille(partie, new Grille(lignes, colonnes));
+					Grille grille = new Grille(lignes, colonnes);
+					grilleC.ajouterObserver(grille, vue);
+					partieC.setGrille(partie, grille);
 					frame.dispose();
 					start();
 				}
@@ -248,6 +250,14 @@ public class GUIView {
 		frame.add(infoTexte, gbc);
 				
 		this.frame.setVisible(true);
+	}
+	
+	public void update(Observable o, Object arg) {
+		Color couleur;
+		if (this.partie.getJoueurEnCours().getCouleur() == "rouge") couleur = Color.red;
+		else couleur = Color.yellow;
+		
+		this.GUIGrille[this.partie.getGrille().getDernièreLigneJouée()][this.partie.getGrille().getDernièreColonneJouée()].setBackground(couleur);
 	}
 	
 	/**
